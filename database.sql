@@ -1,0 +1,139 @@
+-- database.sql - Run this to create the database and tables
+CREATE DATABASE php_hotel_ms;
+USE php_hotel_ms;
+
+-- Users table
+CREATE TABLE IF NOT EXISTS user (
+    userId INT PRIMARY KEY AUTO_INCREMENT,
+    fullName VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    address TEXT NOT NULL,
+    dateOfBirth DATE NOT NULL,
+    idCardNumber VARCHAR(50) UNIQUE NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'customer') DEFAULT 'customer'
+);
+
+-- Rooms table
+CREATE TABLE IF NOT EXISTS room (
+    roomImage VARCHAR(255),
+    roomId INT PRIMARY KEY AUTO_INCREMENT,
+    roomNumber VARCHAR(20) UNIQUE NOT NULL,
+    roomType VARCHAR(50) NOT NULL,
+    pricePerNight DECIMAL(10,2) NOT NULL,
+    capacity INT NOT NULL,
+    bedType VARCHAR(50) NOT NULL,
+    viewType VARCHAR(50) NOT NULL,
+    amenities TEXT,
+    isAvailable BOOLEAN DEFAULT TRUE
+);
+
+-- Bookings table
+CREATE TABLE IF NOT EXISTS bookinginfo (
+    bookingId INT PRIMARY KEY AUTO_INCREMENT,
+    userId INT NOT NULL,
+    roomId INT NOT NULL,
+    checkInDate DATE NOT NULL,
+    checkOutDate DATE NOT NULL,
+    totalPrice DECIMAL(10,2) NOT NULL,
+    status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
+    bookingDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    specialRequests TEXT,
+    numberOfGuests INT NOT NULL,
+    FOREIGN KEY (userId) REFERENCES user(userId) ON DELETE CASCADE,
+    FOREIGN KEY (roomId) REFERENCES room(roomId) ON DELETE CASCADE
+);
+
+-- Insert sample admin account (password: admin123)
+INSERT INTO user (fullName, email, phone, address, dateOfBirth, idCardNumber, username, password, role) 
+VALUES ('Admin User', 'admin@hotel.com', '1234567890', 'Hotel Address', '1990-01-01', 'ADMIN001', 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin');
+
+-- Insert sample rooms
+INSERT INTO room (roomNumber, roomType, pricePerNight, capacity, bedType, viewType, amenities, isAvailable) VALUES
+('101', 'Standard', 99.99, 2, 'Queen', 'City View', 'WiFi, TV, AC', 1),
+('102', 'Standard', 99.99, 2, 'Queen', 'City View', 'WiFi, TV, AC', 1),
+('201', 'Deluxe', 149.99, 4, 'King', 'Ocean View', 'WiFi, TV, AC, Mini Bar', 1),
+('202', 'Deluxe', 149.99, 4, 'King', 'Ocean View', 'WiFi, TV, AC, Mini Bar', 1),
+('301', 'Suite', 249.99, 6, 'King', 'Ocean View', 'WiFi, TV, AC, Mini Bar, Jacuzzi', 1),
+('401', 'Presidential', 499.99, 8, 'King', 'Ocean View', 'WiFi, TV, AC, Mini Bar, Jacuzzi, Private Pool', 1);
+
+
+USE php_hotel_ms;
+SET FOREIGN_KEY_CHECKS = 0;
+
+TRUNCATE TABLE user;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+USE php_hotel_ms;
+SELECT * FROM user;
+
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE room;
+SET FOREIGN_KEY_CHECKS = 1;
+INSERT INTO room (
+    roomImage, roomNumber, roomType, pricePerNight, capacity,
+    bedType, viewType, amenities, isAvailable
+) VALUES
+(
+    'room1.jpg',
+    'A101',
+    'Standard Room',
+    25.00,
+    2,
+    'Twin Beds',
+    'City View',
+    'Air Conditioning, TV, WiFi, Hot Water',
+    TRUE
+),
+(
+    'room2.jpg',
+    'A102',
+    'Deluxe Room',
+    40.00,
+    3,
+    'Queen Bed',
+    'Sea View',
+    'Air Conditioning, TV, WiFi, Hot Water, Private Bathroom',
+    TRUE
+),
+(
+    'room3.jpg',
+    'B201',
+    'Suite Room',
+    65.00,
+    4,
+    'Double King Beds',
+    'Mountain View',
+    'Air Conditioning, TV, WiFi, Hot Water, Living Room',
+    TRUE
+),
+(
+    'room4.jpg',
+    'B202',
+    'Family Room',
+    55.00,
+    5,
+    'Multiple Beds',
+    'Garden View',
+    'Air Conditioning, TV, WiFi, Hot Water, Mini Kitchen',
+    TRUE
+),
+(
+    'room5.jpg',
+    'C301',
+    'Luxury Room',
+    90.00,
+    2,
+    'King Bed',
+    'Sea View',
+    'Air Conditioning, Smart TV, High-speed WiFi, Jacuzzi',
+    TRUE
+);
+
+USE php_hotel_ms;
+ALTER TABLE room
+ADD COLUMN roomImage VARCHAR(255) FIRST;
+SELECT * FROM room;
