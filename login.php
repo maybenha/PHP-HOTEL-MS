@@ -1,5 +1,5 @@
 <?php
-// login.php - User login page
+// login.php - User login page with password show/hide toggle
 require_once 'config.php'; // Assuming config.php contains session_start(), isLoggedIn(), redirect(), displayAlert() etc.
 
 $error = '';
@@ -75,6 +75,7 @@ if (session_status() == PHP_SESSION_NONE) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Hotel Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* --- Color palette from image reference --- */
         :root {
@@ -187,6 +188,52 @@ if (session_status() == PHP_SESSION_NONE) {
             font-size: 0.9rem;
         }
 
+        /* Password input group styling */
+        .input-group {
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch;
+        }
+
+        .input-group .form-control {
+            position: relative;
+            flex: 1 1 auto;
+            width: 1%;
+            min-width: 0;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            z-index: 10;
+            background: transparent;
+            border: none;
+            padding: 0 12px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s ease;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-blue);
+        }
+
+        .password-toggle:focus {
+            outline: none;
+        }
+
+        /* Adjust form-control padding when toggle is present */
+        .input-group .form-control {
+            padding-right: 40px;
+        }
+
         /* alert styling — sharp edges, clean */
         .alert {
             border-radius: 0;
@@ -279,8 +326,13 @@ if (session_status() == PHP_SESSION_NONE) {
 
 <nav class="navbar navbar-expand-lg primary-bg">
     <div class="container">
-        <a class="navbar-brand text-white fw-bold" href="index.php">🏨 Hotel Management System</a>
+      <a href="index.php" class="navbar-brand">
+        <img src="bayon_logo.png" alt="Hotel Logo" 
+        style="width: 120px; height: auto; display: block; margin: 0 auto;">
+    </a>
+        <a class="navbar-brand text-white fw-bold" href="index.php">BayonBooking</a>
         <div class="ms-auto">
+             <a href="index.php" class="btn btn-outline-light">Back to Dashboard</a>
             <a href="login.php" class="btn btn-outline-light">Login</a>
             <a href="register.php" class="btn btn-light ms-2">Register</a>
         </div>
@@ -297,11 +349,7 @@ if (session_status() == PHP_SESSION_NONE) {
                 <div class="card-body">
                     <!-- Error alert placeholder using same displayAlert structure -->
                     <!-- Inline dynamic error handling matching the original PHP logic -->
-                    <?php
-                    // This section is kept dynamic to work within the existing PHP logic.
-                    // The variable $error is set above from login.php logic.
-                    // For demonstration: if error string is not empty, show alert.
-                    if (!empty($error)): ?>
+                    <?php if (!empty($error)): ?>
                         <div class="alert alert-danger mb-4" role="alert">
                             <?php echo htmlspecialchars($error); ?>
                         </div>
@@ -310,11 +358,16 @@ if (session_status() == PHP_SESSION_NONE) {
                     <form method="POST" action="">
                         <div class="mb-3">
                             <label class="form-label">Username</label>
-                            <input type="text" name="username" class="form-control" placeholder="ENTER USERNAME" required>
+                            <input type="text" name="username" class="form-control" placeholder="Enter username" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                            <div class="input-group">
+                                <input type="password" name="password" id="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                                <button type="button" class="password-toggle" id="togglePassword" aria-label="Show/Hide Password">
+                                    <i class="fa-regular fa-eye-slash" id="toggleIcon"></i>
+                                </button>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Login</button>
                     </form>
@@ -328,45 +381,30 @@ if (session_status() == PHP_SESSION_NONE) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Password show/hide toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggleIcon');
+        
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function() {
+                // Toggle the type attribute
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Toggle the eye icon (open/closed)
+                if (type === 'password') {
+                    toggleIcon.classList.remove('fa-eye');
+                    toggleIcon.classList.add('fa-eye-slash');
+                } else {
+                    toggleIcon.classList.remove('fa-eye-slash');
+                    toggleIcon.classList.add('fa-eye');
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>
-
-<?php
-// The following PHP code is the original backend logic preserved from login.php
-// It integrates with the HTML above seamlessly. The HTML/CSS has been styled according
-// to the reference image: flat design, sharp corners (#0c3be4 primary color, grid layout).
-// No border-radius anywhere, exact color consistency and grid style (Bootstrap 5 + custom).
-// The placeholder attribute "ENTER PRODUCT NAME" is present as per reference.
-
-// The full file context: login.php includes config, session, DB authentication.
-// Since the requirement asked to apply the color and grid style of the image (the ADD NEW PRODUCT
-// layout reference) to this PHP code, we retain 100% backend functionality and update frontend
-// design matching the screenshot style (clean white cards, blue #0c3be4, no radius, grid approach).
-
-// Note: The original login.php code expects config.php and database functions (isLoggedIn, redirect, isAdmin, displayAlert).
-// This file is fully compatible with the existing backend. We have just transformed the HTML/CSS layer.
-?>
-
-<?php
-/**
- * register.php - User registration page (improved UI)
- * 
- * Backend logic preserved exactly as original:
- * - Validates password match
- * - Checks for existing username/email/idCardNumber
- * - Hashes password and inserts into `user` table
- * - Displays success/error messages
- * 
- * All design improvements follow the image reference:
- * - NO border-radius on any element (cards, inputs, buttons, alerts)
- * - Primary color: #0c3be4 with #0a32c4 hover
- * - Clean white cards, subtle box-shadow, light background (#f8f9fc)
- * - Bootstrap grid system with sharp edges
- * - Consistent form styling with uppercase labels and clear placeholders
- * - Preserves full PHP functionality (config, session, POST handling)
- * 
- * The `displayAlert` function (if defined in helpers) is replaced with direct
- * alert rendering to ensure style consistency, but all backend logic remains.
- * The registration flow works exactly as the original requirement.
- */
-?>

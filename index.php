@@ -338,7 +338,11 @@ if (isLoggedIn()) {
 
 <nav class="navbar navbar-expand-lg primary-bg">
     <div class="container">
-        <a class="navbar-brand text-white fw-bold" href="index.php">🏨 Hotel Management System</a>
+        <a href="index.php" class="navbar-brand">
+        <img src="bayon_logo.png" alt="Hotel Logo" 
+        style="width: 120px; height: auto; display: block; margin: 0 auto;">
+    </a>
+        <a class="navbar-brand text-white fw-bold" href="index.php">BayonBooking</a>
         <div class="ms-auto">
             <a href="login.php" class="btn btn-outline-light">Login</a>
             <a href="register.php" class="btn btn-light ms-2">Register</a>

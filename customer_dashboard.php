@@ -458,12 +458,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
 
 <nav class="navbar navbar-expand-lg primary-bg">
     <div class="container">
-         <a class="navbar-brand" href=""><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="white" viewBox="0 0 16 16">
-            <path d="M8 0L0 4v12h16V4L8 0zm6 14H2V5l6-3 6 3v9z"/>
-            <path d="M3 6h2v2H3V6zm0 3h2v2H3V9zm0 3h2v2H3v-2zm4-6h2v2H7V6zm0 3h2v2H7V9zm0 3h2v2H7v-2zm4-6h2v2h-2V6zm0 3h2v2h-2V9z"/>
-            </svg>
-        </a>
-        <a class="navbar-brand text-white fw-bold" href="customer_dashboard.php">Hotel Management System</a>
+        <a href="index.php" class="navbar-brand">
+        <img src="bayon_logo.png" alt="Hotel Logo" 
+        style="width: 120px; height: auto; display: block; margin: 0 auto;">
+    </a>
+        <a class="navbar-brand text-white fw-bold" href="customer_dashboard.php">BayonBooking</a>
         <div class="ms-auto">
             <span class="text-white me-3"><i class="bi bi-person-circle"></i> <?php echo htmlspecialchars($_SESSION['fullName']); ?></span>
             <a href="logout.php" class="btn btn-outline-light">Logout</a>
@@ -486,6 +485,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                 </div>
                 <hr>
                 <div class="nav flex-column">
+                    <a href="#rooms" class="nav-link" data-bs-toggle="pill">
+                        <i class="bi bi-building"></i> Browse Rooms
+                    </a>
                     <a href="#profile" class="nav-link active" data-bs-toggle="pill">
                         <i class="bi bi-person"></i> My Profile
                     </a>
@@ -495,9 +497,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                             <span class="badge bg-primary float-end" style="border-radius: 0 !important;"><?php echo count($bookings); ?></span>
                         <?php endif; ?>
                     </a>
-                    <a href="#rooms" class="nav-link" data-bs-toggle="pill">
-                        <i class="bi bi-building"></i> Browse Rooms
-                    </a>
+                    
                 </div>
             </div>
         </div>
@@ -505,104 +505,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
         <!-- Main Content Area -->
         <div class="col-md-9">
             <div class="tab-content">
-                <!-- Profile Tab -->
-                <div class="tab-pane fade show active" id="profile">
-                    <div class="card">
-                        <div class="card-header">
-                            <i class="bi bi-person"></i> Personal Information
-                        </div>
-                        <div class="card-body">
-                            <?php if(!empty($profileSuccess)): ?>
-                                <div class="alert alert-success"><?php echo htmlspecialchars($profileSuccess); ?></div>
-                            <?php endif; ?>
-                            <?php if(!empty($profileError)): ?>
-                                <div class="alert alert-danger"><?php echo htmlspecialchars($profileError); ?></div>
-                            <?php endif; ?>
-                            
-                            <form method="POST" action="">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Full Name *</label>
-                                        <input type="text" name="fullName" class="form-control" value="<?php echo htmlspecialchars($user['fullName']); ?>" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Email Address *</label>
-                                        <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($user['email']); ?>" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Phone Number *</label>
-                                        <input type="tel" name="phone" class="form-control" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Date of Birth *</label>
-                                        <input type="date" name="dateOfBirth" class="form-control" value="<?php echo $user['dateOfBirth']; ?>" required>
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label">Address *</label>
-                                        <textarea name="address" class="form-control" rows="2" required><?php echo htmlspecialchars($user['address']); ?></textarea>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">ID Card Number</label>
-                                        <input type="text" class="form-control" value="<?php echo htmlspecialchars($user['idCardNumber']); ?>" disabled>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Username</label>
-                                        <input type="text" class="form-control" value="<?php echo htmlspecialchars($user['username']); ?>" disabled>
-                                    </div>
-                                </div>
-                                <div class="mt-4">
-                                    <button type="submit" name="update_profile" class="btn btn-primary">Update Profile</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bookings Tab -->
-                <div class="tab-pane fade" id="bookings">
-                    <div class="card">
-                        <div class="card-header">
-                            <i class="bi bi-calendar-check"></i> My Booking History
-                        </div>
-                        <div class="card-body">
-                            <?php if(count($bookings) == 0): ?>
-                                <div class="alert alert-info">You haven't made any bookings yet. <a href="#rooms" class="alert-link" data-bs-toggle="pill">Browse available rooms →</a></div>
-                            <?php else: ?>
-                                <div class="row g-3">
-                                    <?php foreach($bookings as $booking): ?>
-                                        <div class="col-12">
-                                            <div class="booking-item">
-                                                <div class="row align-items-start">
-                                                    <div class="col-md-8">
-                                                        <h6 class="mb-1"><i class="bi bi-door-closed"></i> Room #<?php echo htmlspecialchars($booking['roomNumber']); ?> — <?php echo htmlspecialchars($booking['roomType']); ?></h6>
-                                                        <small class="text-muted">Booking ID: <?php echo $booking['bookingId']; ?></small><br>
-                                                        <small><i class="bi bi-calendar"></i> Check-in: <?php echo date('d M Y', strtotime($booking['checkInDate'])); ?></small><br>
-                                                        <small><i class="bi bi-calendar-x"></i> Check-out: <?php echo date('d M Y', strtotime($booking['checkOutDate'])); ?></small><br>
-                                                        <small><i class="bi bi-people"></i> Guests: <?php echo $booking['numberOfGuests']; ?></small><br>
-                                                        <strong class="primary-color">Total: $<?php echo number_format($booking['totalPrice'], 2); ?></strong>
-                                                    </div>
-                                                    <div class="col-md-4 text-md-end mt-2 mt-md-0">
-                                                        <span class="status-<?php echo $booking['status']; ?>"><?php echo ucfirst($booking['status']); ?></span>
-                                                        <br>
-                                                        <small class="text-muted"><i class="bi bi-clock"></i> Booked: <?php echo date('d M Y', strtotime($booking['bookingDate'])); ?></small>
-                                                    </div>
-                                                    <?php if($booking['specialRequests']): ?>
-                                                        <div class="col-12 mt-2">
-                                                            <hr class="my-2">
-                                                            <small><strong><i class="bi bi-chat"></i> Special Requests:</strong> <?php echo htmlspecialchars($booking['specialRequests']); ?></small>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Rooms Tab with roomImage support -->
                 <div class="tab-pane fade" id="rooms">
                     <div class="card">
                         <div class="card-header">
@@ -731,6 +633,106 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                         </div>
                     </div>
                 </div>
+
+                <!-- Profile Tab -->
+                <div class="tab-pane fade show active" id="profile">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="bi bi-person"></i> Personal Information
+                        </div>
+                        <div class="card-body">
+                            <?php if(!empty($profileSuccess)): ?>
+                                <div class="alert alert-success"><?php echo htmlspecialchars($profileSuccess); ?></div>
+                            <?php endif; ?>
+                            <?php if(!empty($profileError)): ?>
+                                <div class="alert alert-danger"><?php echo htmlspecialchars($profileError); ?></div>
+                            <?php endif; ?>
+                            
+                            <form method="POST" action="">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Full Name *</label>
+                                        <input type="text" name="fullName" class="form-control" value="<?php echo htmlspecialchars($user['fullName']); ?>" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Email Address *</label>
+                                        <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Phone Number *</label>
+                                        <input type="tel" name="phone" class="form-control" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Date of Birth *</label>
+                                        <input type="date" name="dateOfBirth" class="form-control" value="<?php echo $user['dateOfBirth']; ?>" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Address *</label>
+                                        <textarea name="address" class="form-control" rows="2" required><?php echo htmlspecialchars($user['address']); ?></textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">ID Card Number</label>
+                                        <input type="text" class="form-control" value="<?php echo htmlspecialchars($user['idCardNumber']); ?>" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Username</label>
+                                        <input type="text" class="form-control" value="<?php echo htmlspecialchars($user['username']); ?>" disabled>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" name="update_profile" class="btn btn-primary">Update Profile</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bookings Tab -->
+                <div class="tab-pane fade" id="bookings">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="bi bi-calendar-check"></i> My Booking History
+                        </div>
+                        <div class="card-body">
+                            <?php if(count($bookings) == 0): ?>
+                                <div class="alert alert-info">You haven't made any bookings yet. <a href="#rooms" class="alert-link" data-bs-toggle="pill">Browse available rooms →</a></div>
+                            <?php else: ?>
+                                <div class="row g-3">
+                                    <?php foreach($bookings as $booking): ?>
+                                        <div class="col-12">
+                                            <div class="booking-item">
+                                                <div class="row align-items-start">
+                                                    <div class="col-md-8">
+                                                        <h6 class="mb-1"><i class="bi bi-door-closed"></i> Room #<?php echo htmlspecialchars($booking['roomNumber']); ?> — <?php echo htmlspecialchars($booking['roomType']); ?></h6>
+                                                        <small class="text-muted">Booking ID: <?php echo $booking['bookingId']; ?></small><br>
+                                                        <small><i class="bi bi-calendar"></i> Check-in: <?php echo date('d M Y', strtotime($booking['checkInDate'])); ?></small><br>
+                                                        <small><i class="bi bi-calendar-x"></i> Check-out: <?php echo date('d M Y', strtotime($booking['checkOutDate'])); ?></small><br>
+                                                        <small><i class="bi bi-people"></i> Guests: <?php echo $booking['numberOfGuests']; ?></small><br>
+                                                        <strong class="primary-color">Total: $<?php echo number_format($booking['totalPrice'], 2); ?></strong>
+                                                    </div>
+                                                    <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                                                        <span class="status-<?php echo $booking['status']; ?>"><?php echo ucfirst($booking['status']); ?></span>
+                                                        <br>
+                                                        <small class="text-muted"><i class="bi bi-clock"></i> Booked: <?php echo date('d M Y', strtotime($booking['bookingDate'])); ?></small>
+                                                    </div>
+                                                    <?php if($booking['specialRequests']): ?>
+                                                        <div class="col-12 mt-2">
+                                                            <hr class="my-2">
+                                                            <small><strong><i class="bi bi-chat"></i> Special Requests:</strong> <?php echo htmlspecialchars($booking['specialRequests']); ?></small>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rooms Tab with roomImage support -->
+                
             </div>
         </div>
     </div>
@@ -739,46 +741,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-<?php
-/**
- * customer_dashboard.php - Customer Dashboard (improved UI with roomImage support)
- * 
- * Backend logic preserved exactly as original:
- * - Requires authentication and customer role check
- * - Fetches user profile and booking history from database
- * - Handles profile update POST request
- * - Displays available rooms with booking modals
- * 
- * NEW FEATURE - roomImage field integration:
- * - Displays room images from the database 'roomImage' column (VARCHAR(255))
- * - Shows image in room card with 180px height container
- * - Fallback placeholder when no image is available
- * - Image preview in booking modal for better user experience
- * - Supports both local file paths and external URLs
- * 
- * IMPROVEMENTS based on reference image (ADD NEW PRODUCT layout):
- * - Removed ALL border-radius from cards, sidebar, modals, buttons, alerts
- * - Applied consistent color palette: primary #0c3be4, light background #f8f9fc
- * - Flat design with sharp corners and clean borders
- * - Enhanced status badges with flat styling (no rounded pills)
- * - Room cards now feature image section with professional layout
- * - Amenity badges for room type classification
- * - Responsive grid that works on all screen sizes
- * - All interactive elements maintain flat design aesthetic
- * 
- * Database structure supported:
- * CREATE TABLE IF NOT EXISTS room (
- *     roomImage VARCHAR(255),
- *     roomId INT PRIMARY KEY AUTO_INCREMENT,
- *     roomNumber VARCHAR(20) UNIQUE NOT NULL,
- *     roomType VARCHAR(50) NOT NULL,
- *     pricePerNight DECIMAL(10,2) NOT NULL,
- *     capacity INT NOT NULL,
- *     bedType VARCHAR(50) NOT NULL,
- *     viewType VARCHAR(50) NOT NULL,
- *     amenities TEXT,
- *     isAvailable BOOLEAN DEFAULT TRUE
- * );
- */
-?>

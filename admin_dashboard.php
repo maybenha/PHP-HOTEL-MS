@@ -241,12 +241,11 @@ foreach($customers as $customer) {
 
 <nav class="navbar navbar-expand-lg primary-bg">
     <div class="container">
-        <a class="navbar-brand" href=""><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="white" viewBox="0 0 16 16">
-            <path d="M8 0L0 4v12h16V4L8 0zm6 14H2V5l6-3 6 3v9z"/>
-            <path d="M3 6h2v2H3V6zm0 3h2v2H3V9zm0 3h2v2H3v-2zm4-6h2v2H7V6zm0 3h2v2H7V9zm0 3h2v2H7v-2zm4-6h2v2h-2V6zm0 3h2v2h-2V9z"/>
-            </svg>
-        </a>
-        <a class="navbar-brand text-white fw-bold" href="admin_dashboard.php"> Hotel Management System - Admin</a>
+        <a href="index.php" class="navbar-brand">
+        <img src="bayon_logo.png" alt="Hotel Logo" 
+        style="width: 120px; height: auto; display: block; margin: 0 auto;">
+    </a>
+        <a class="navbar-brand text-white fw-bold" href="admin_dashboard.php">BayonBooking - Admin</a>
         <div class="ms-auto">
             <span class="text-white me-3"><i class="bi bi-shield-lock"></i> <?php echo htmlspecialchars($_SESSION['fullName']); ?></span>
             <a href="logout.php" class="btn btn-outline-light">Logout</a>
