@@ -1,5 +1,7 @@
+Here is the PHP code for a full-width admin dashboard page that displays all customer booking details in a comprehensive table.
+```php
 <?php
-// admin_dashboard.php - Admin dashboard
+// admin_dashboard.php - Admin dashboard (Full width, all booking details visible)
 require_once 'config.php';
 
 if (!isLoggedIn() || !isAdmin()) {
@@ -34,12 +36,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
 // Handle room operations
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_room'])) {
-        $stmt = $pdo->prepare("INSERT INTO room (roomNumber, roomType, pricePerNight, capacity, bedType, viewType, amenities, isAvailable) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$_POST['roomNumber'], $_POST['roomType'], $_POST['pricePerNight'], $_POST['capacity'], $_POST['bedType'], $_POST['viewType'], $_POST['amenities'], isset($_POST['isAvailable']) ? 1 : 0]);
+        $roomImage = !empty($_POST['roomImage']) ? $_POST['roomImage'] : null;
+        $stmt = $pdo->prepare("INSERT INTO room (roomNumber, roomType, pricePerNight, capacity, bedType, viewType, amenities, roomImage, isAvailable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$_POST['roomNumber'], $_POST['roomType'], $_POST['pricePerNight'], $_POST['capacity'], $_POST['bedType'], $_POST['viewType'], $_POST['amenities'], $roomImage, isset($_POST['isAvailable']) ? 1 : 0]);
         $_SESSION['success'] = "Room added successfully!";
     } elseif (isset($_POST['edit_room'])) {
-        $stmt = $pdo->prepare("UPDATE room SET roomNumber = ?, roomType = ?, pricePerNight = ?, capacity = ?, bedType = ?, viewType = ?, amenities = ?, isAvailable = ? WHERE roomId = ?");
-        $stmt->execute([$_POST['roomNumber'], $_POST['roomType'], $_POST['pricePerNight'], $_POST['capacity'], $_POST['bedType'], $_POST['viewType'], $_POST['amenities'], isset($_POST['isAvailable']) ? 1 : 0, $_POST['roomId']]);
+        $roomImage = !empty($_POST['roomImage']) ? $_POST['roomImage'] : null;
+        $stmt = $pdo->prepare("UPDATE room SET roomNumber = ?, roomType = ?, pricePerNight = ?, capacity = ?, bedType = ?, viewType = ?, amenities = ?, roomImage = ?, isAvailable = ? WHERE roomId = ?");
+        $stmt->execute([$_POST['roomNumber'], $_POST['roomType'], $_POST['pricePerNight'], $_POST['capacity'], $_POST['bedType'], $_POST['viewType'], $_POST['amenities'], $roomImage, isset($_POST['isAvailable']) ? 1 : 0, $_POST['roomId']]);
         $_SESSION['success'] = "Room updated successfully!";
     } elseif (isset($_POST['delete_room'])) {
         $stmt = $pdo->prepare("DELETE FROM room WHERE roomId = ?");
@@ -56,8 +60,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Fetch all rooms
 $rooms = $pdo->query("SELECT * FROM room ORDER BY roomNumber")->fetchAll();
 
-// Fetch all bookings with user and room info
-$bookings = $pdo->query("SELECT b.*, u.fullName, u.email, u.phone, r.roomNumber, r.roomType 
+// Fetch all bookings with COMPLETE user and room info (all fields)
+$bookings = $pdo->query("SELECT 
+                            b.*, 
+                            u.fullName, 
+                            u.email, 
+                            u.phone,
+                            u.address as customerAddress,
+                            u.idCardNumber,
+                            r.roomNumber, 
+                            r.roomType,
+                            r.pricePerNight,
+                            r.capacity,
+                            r.bedType,
+                            r.viewType,
+                            r.amenities
                          FROM bookinginfo b 
                          JOIN user u ON b.userId = u.userId 
                          JOIN room r ON b.roomId = r.roomId 
@@ -75,7 +92,6 @@ foreach($customers as $customer) {
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -85,7 +101,7 @@ foreach($customers as $customer) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
-        /* --- Color palette consistent with image reference (flat design, sharp corners) --- */
+        /* --- Color palette consistent with image reference (flat design, sharp corners, FULL WIDTH) --- */
         :root {
             --primary-blue: #0c3be4;
             --primary-dark: #0a32c4;
@@ -112,6 +128,23 @@ foreach($customers as $customer) {
             background-color: var(--light-bg);
             font-family: Arial, Helvetica, sans-serif;
             color: var(--text-dark);
+            overflow-x: auto;
+        }
+
+        /* FULL WIDTH CONTAINER OVERRIDE */
+        .container-fluid-custom {
+            width: 100%;
+            padding-right: 1.5rem;
+            padding-left: 1.5rem;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        /* Remove max-width from container to make it full width */
+        .container {
+            max-width: 100% !important;
+            width: 100%;
+            padding: 0 1.5rem;
         }
 
         .primary-bg { background-color: var(--primary-blue); }
@@ -139,7 +172,7 @@ foreach($customers as $customer) {
         .navbar { padding: 0.85rem 0; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .navbar-brand { font-weight: 700; font-size: 1.4rem; letter-spacing: -0.2px; }
 
-        /* Sidebar */
+        /* Sidebar - Full width adjustment */
         .sidebar { background-color: white; border: 1px solid var(--border-light); padding: 1.5rem; margin-bottom: 1.5rem; }
         .nav-link { color: var(--text-dark); padding: 0.7rem 1rem; margin-bottom: 0.25rem; transition: all 0.2s; font-weight: 500; }
         .nav-link:hover { background-color: var(--gray-soft); color: var(--primary-blue); }
@@ -175,12 +208,13 @@ foreach($customers as $customer) {
         .alert-success { border-left-color: #10b981; background-color: #ecfdf5; color: #065f46; border: 1px solid #d1fae5; }
         .alert-danger { border-left-color: #ef4444; background-color: #fef2f2; color: #991b1b; border: 1px solid #fee2e2; }
 
-        /* Tables */
-        .table { border-collapse: collapse; }
+        /* Tables - Full width with all columns visible */
+        .table { border-collapse: collapse; width: 100%; min-width: 1400px; }
         .table-bordered { border: 1px solid var(--border-light); }
         .table-bordered th, .table-bordered td { border: 1px solid var(--border-light); padding: 0.75rem; vertical-align: middle; }
-        .table thead th { background-color: var(--primary-blue); color: white; font-weight: 600; border-color: var(--primary-dark); }
+        .table thead th { background-color: var(--primary-blue); color: white; font-weight: 600; border-color: var(--primary-dark); white-space: nowrap; }
         .table tbody tr:hover { background-color: var(--gray-soft); }
+        .table-responsive { overflow-x: auto; width: 100%; }
 
         /* Room Image Preview */
         .room-image-preview {
@@ -235,6 +269,22 @@ foreach($customers as $customer) {
         .text-muted-small { font-size: 0.7rem; color: var(--text-muted); }
         .d-flex.gap-2 { gap: 0.5rem; }
         .form-select-sm { font-size: 0.8rem; padding: 0.25rem 0.5rem; }
+        
+        /* Full width adjustment for row */
+        .row {
+            margin-left: 0;
+            margin-right: 0;
+        }
+        
+        /* Fixed sidebar width, main content takes remaining full width */
+        .col-md-3 {
+            flex: 0 0 260px;
+            max-width: 260px;
+        }
+        .col-md-9 {
+            flex: 1;
+            max-width: calc(100% - 260px);
+        }
     </style>
 </head>
 <body>
@@ -242,9 +292,9 @@ foreach($customers as $customer) {
 <nav class="navbar navbar-expand-lg primary-bg">
     <div class="container">
         <a href="index.php" class="navbar-brand">
-        <img src="bayon_logo.png" alt="Hotel Logo" 
-        style="width: 120px; height: auto; display: block; margin: 0 auto;">
-    </a>
+            <img src="bayon_logo.png" alt="Hotel Logo" 
+            style="width: 120px; height: auto; display: block; margin: 0 auto;">
+        </a>
         <a class="navbar-brand text-white fw-bold" href="admin_dashboard.php">BayonBooking - Admin</a>
         <div class="ms-auto">
             <span class="text-white me-3"><i class="bi bi-shield-lock"></i> <?php echo htmlspecialchars($_SESSION['fullName']); ?></span>
@@ -281,7 +331,7 @@ foreach($customers as $customer) {
             </div>
         </div>
 
-        <!-- Main Content -->
+        <!-- Main Content - FULL WIDTH -->
         <div class="col-md-9">
             <div class="tab-content">
                 <!-- Profile Tab -->
@@ -348,7 +398,7 @@ foreach($customers as $customer) {
                                         <div class="modal fade" id="editRoomModal<?php echo $room['roomId']; ?>" tabindex="-1">
                                             <div class="modal-dialog modal-lg">
                                                 <div class="modal-content">
-                                                    <form method="POST" enctype="multipart/form-data">
+                                                    <form method="POST">
                                                         <div class="modal-header primary-bg text-white"><h5 class="modal-title"><i class="bi bi-pencil"></i> Edit Room #<?php echo htmlspecialchars($room['roomNumber']); ?></h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
                                                         <div class="modal-body">
                                                             <input type="hidden" name="roomId" value="<?php echo $room['roomId']; ?>">
@@ -400,7 +450,7 @@ foreach($customers as $customer) {
                 <div class="modal fade" id="addRoomModal" tabindex="-1">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
-                            <form method="POST" enctype="multipart/form-data">
+                            <form method="POST">
                                 <div class="modal-header primary-bg text-white"><h5 class="modal-title"><i class="bi bi-plus-circle"></i> Add New Room</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
                                 <div class="modal-body">
                                     <div class="row g-3">
@@ -421,28 +471,83 @@ foreach($customers as $customer) {
                     </div>
                 </div>
 
-                <!-- Bookings Management Tab -->
+                <!-- Bookings Management Tab - FULL DETAILS TABLE -->
                 <div class="tab-pane fade" id="bookings">
                     <div class="card">
-                        <div class="card-header"><i class="bi bi-calendar-check"></i> Manage Customer Bookings</div>
+                        <div class="card-header"><i class="bi bi-calendar-check"></i> Manage Customer Bookings - Complete Details</div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead><tr><th>Booking ID</th><th>Customer</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Guests</th><th>Total</th><th>Status</th><th>Action</th></tr></thead>
+                                <table class="table table-bordered" style="min-width: 1800px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Booking ID</th>
+                                            <th>Customer Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>ID Card</th>
+                                            <th>Customer Address</th>
+                                            <th>Room #</th>
+                                            <th>Room Type</th>
+                                            <th>Price/Night</th>
+                                            <th>Bed Type</th>
+                                            <th>View</th>
+                                            <th>Amenities</th>
+                                            <th>Check-in</th>
+                                            <th>Check-out</th>
+                                            <th>Nights</th>
+                                            <th>Guests</th>
+                                            <th>Total Price</th>
+                                            <th>Special Requests</th>
+                                            <th>Booking Date</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
                                     <tbody>
-                                        <?php foreach($bookings as $booking): ?>
+                                        <?php foreach($bookings as $booking): 
+                                            $checkIn = new DateTime($booking['checkInDate']);
+                                            $checkOut = new DateTime($booking['checkOutDate']);
+                                            $nights = $checkIn->diff($checkOut)->days;
+                                        ?>
                                         <tr>
                                             <td><strong>#<?php echo $booking['bookingId']; ?></strong></td>
-                                            <td><?php echo htmlspecialchars($booking['fullName']); ?><br><small class="text-muted"><?php echo $booking['email']; ?></small></td>
-                                            <td><?php echo htmlspecialchars($booking['roomNumber']); ?><br><small class="text-muted"><?php echo $booking['roomType']; ?></small></td>
+                                            <td><?php echo htmlspecialchars($booking['fullName']); ?></td>
+                                            <td><?php echo htmlspecialchars($booking['email']); ?></td>
+                                            <td><?php echo htmlspecialchars($booking['phone']); ?></td>
+                                            <td><?php echo htmlspecialchars($booking['idCardNumber'] ?? 'N/A'); ?></td>
+                                            <td><small><?php echo htmlspecialchars(substr($booking['customerAddress'] ?? '', 0, 50)); ?></small></td>
+                                            <td><?php echo htmlspecialchars($booking['roomNumber']); ?></td>
+                                            <td><?php echo htmlspecialchars($booking['roomType']); ?></td>
+                                            <td>$<?php echo number_format($booking['pricePerNight'], 2); ?></td>
+                                            <td><?php echo htmlspecialchars($booking['bedType']); ?></td>
+                                            <td><?php echo htmlspecialchars($booking['viewType']); ?></td>
+                                            <td><small><?php echo htmlspecialchars(substr($booking['amenities'] ?? '', 0, 40)); ?></small></td>
                                             <td><?php echo date('d M Y', strtotime($booking['checkInDate'])); ?></td>
                                             <td><?php echo date('d M Y', strtotime($booking['checkOutDate'])); ?></td>
-                                            <td><?php echo $booking['numberOfGuests']; ?></td>
+                                            <td class="text-center"><?php echo $nights; ?></td>
+                                            <td class="text-center"><?php echo $booking['numberOfGuests']; ?></td>
                                             <td><strong>$<?php echo number_format($booking['totalPrice'], 2); ?></strong></td>
+                                            <td><small><?php echo htmlspecialchars(substr($booking['specialRequests'] ?? '', 0, 50)); ?></small></td>
+                                            <td><small><?php echo date('d M Y', strtotime($booking['bookingDate'])); ?></small></td>
                                             <td><span class="status-<?php echo $booking['status']; ?>"><?php echo ucfirst($booking['status']); ?></span></td>
-                                            <td><form method="POST" class="d-flex gap-2 align-items-center"><input type="hidden" name="bookingId" value="<?php echo $booking['bookingId']; ?>"><select name="status" class="form-select form-select-sm" style="width: 110px;"><option value="pending" <?php echo $booking['status'] == 'pending' ? 'selected' : ''; ?>>Pending</option><option value="confirmed" <?php echo $booking['status'] == 'confirmed' ? 'selected' : ''; ?>>Confirmed</option><option value="cancelled" <?php echo $booking['status'] == 'cancelled' ? 'selected' : ''; ?>>Cancelled</option></select><button type="submit" name="update_booking" class="btn btn-primary btn-sm">Update</button></form></td>
+                                            <td>
+                                                <form method="POST" class="d-flex gap-2 align-items-center flex-nowrap">
+                                                    <input type="hidden" name="bookingId" value="<?php echo $booking['bookingId']; ?>">
+                                                    <select name="status" class="form-select form-select-sm" style="width: 110px;">
+                                                        <option value="pending" <?php echo $booking['status'] == 'pending' ? 'selected' : ''; ?>>Pending</option>
+                                                        <option value="confirmed" <?php echo $booking['status'] == 'confirmed' ? 'selected' : ''; ?>>Confirmed</option>
+                                                        <option value="cancelled" <?php echo $booking['status'] == 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
+                                                    </select>
+                                                    <button type="submit" name="update_booking" class="btn btn-primary btn-sm">Update</button>
+                                                </form>
+                                            </td>
                                         </tr>
                                         <?php endforeach; ?>
+                                        <?php if(count($bookings) == 0): ?>
+                                        <tr>
+                                            <td colspan="21" class="text-center text-muted">No bookings found.</td>
+                                        </tr>
+                                        <?php endif; ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -458,12 +563,49 @@ foreach($customers as $customer) {
                             <?php foreach($customers as $customer): ?>
                                 <div class="customer-card">
                                     <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
-                                        <div><h5 class="mb-1"><i class="bi bi-person-circle primary-color"></i> <?php echo htmlspecialchars($customer['fullName']); ?></h5><small class="text-muted"><i class="bi bi-envelope"></i> <?php echo $customer['email']; ?></small><br><small class="text-muted"><i class="bi bi-telephone"></i> <?php echo $customer['phone']; ?></small><br><small class="text-muted"><i class="bi bi-card-text"></i> ID Card: <?php echo $customer['idCardNumber']; ?></small></div>
+                                        <div>
+                                            <h5 class="mb-1"><i class="bi bi-person-circle primary-color"></i> <?php echo htmlspecialchars($customer['fullName']); ?></h5>
+                                            <small class="text-muted"><i class="bi bi-envelope"></i> <?php echo $customer['email']; ?></small><br>
+                                            <small class="text-muted"><i class="bi bi-telephone"></i> <?php echo $customer['phone']; ?></small><br>
+                                            <small class="text-muted"><i class="bi bi-card-text"></i> ID Card: <?php echo $customer['idCardNumber']; ?></small><br>
+                                            <small class="text-muted"><i class="bi bi-geo-alt"></i> Address: <?php echo htmlspecialchars($customer['address']); ?></small>
+                                        </div>
                                         <span class="badge bg-primary">Customer</span>
                                     </div>
                                     <?php if(count($customerBookings[$customer['userId']]) > 0): ?>
                                         <h6 class="mt-3 mb-2"><i class="bi bi-calendar-check"></i> Booking History:</h6>
-                                        <div class="table-responsive"><table class="table table-bordered table-sm"><thead><tr><th>Booking ID</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Guests</th><th>Total</th><th>Status</th><th>Booked On</th></tr></thead><tbody><?php foreach($customerBookings[$customer['userId']] as $booking): ?><tr><td>#<?php echo $booking['bookingId']; ?></td><td><?php echo htmlspecialchars($booking['roomNumber']); ?><br><small class="text-muted"><?php echo $booking['roomType']; ?></small></td><td><?php echo date('d M Y', strtotime($booking['checkInDate'])); ?></td><td><?php echo date('d M Y', strtotime($booking['checkOutDate'])); ?></td><td><?php echo $booking['numberOfGuests']; ?></td><td>$<?php echo number_format($booking['totalPrice'], 2); ?></td><td><span class="status-<?php echo $booking['status']; ?>"><?php echo ucfirst($booking['status']); ?></span></td><td><?php echo date('d M Y', strtotime($booking['bookingDate'])); ?></td></tr><?php endforeach; ?></tbody></table></div>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Booking ID</th>
+                                                        <th>Room</th>
+                                                        <th>Check-in</th>
+                                                        <th>Check-out</th>
+                                                        <th>Guests</th>
+                                                        <th>Total</th>
+                                                        <th>Status</th>
+                                                        <th>Special Requests</th>
+                                                        <th>Booked On</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php foreach($customerBookings[$customer['userId']] as $booking): ?>
+                                                    <tr>
+                                                        <td>#<?php echo $booking['bookingId']; ?></td>
+                                                        <td><?php echo htmlspecialchars($booking['roomNumber']); ?><br><small class="text-muted"><?php echo $booking['roomType']; ?></small></td>
+                                                        <td><?php echo date('d M Y', strtotime($booking['checkInDate'])); ?></td>
+                                                        <td><?php echo date('d M Y', strtotime($booking['checkOutDate'])); ?></td>
+                                                        <td><?php echo $booking['numberOfGuests']; ?></td>
+                                                        <td>$<?php echo number_format($booking['totalPrice'], 2); ?></td>
+                                                        <td><span class="status-<?php echo $booking['status']; ?>"><?php echo ucfirst($booking['status']); ?></span></td>
+                                                        <td><small><?php echo htmlspecialchars(substr($booking['specialRequests'] ?? '', 0, 50)); ?></small></td>
+                                                        <td><?php echo date('d M Y', strtotime($booking['bookingDate'])); ?></td>
+                                                    </tr>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     <?php else: ?>
                                         <p class="text-muted mt-2"><i class="bi bi-info-circle"></i> No booking history for this customer.</p>
                                     <?php endif; ?>
@@ -480,3 +622,4 @@ foreach($customers as $customer) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+```
