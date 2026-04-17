@@ -1,3 +1,5 @@
+<img width="100" height="100" alt="num" src="https://github.com/user-attachments/assets/44fd2441-7720-40a0-b891-c401a32927c2" />
+
 ++++++++++++++ Hotel Management System --------------------
 
 A full-featured Hotel Management System designed to manage hotel operations efficiently. This system supports two main roles: Admin and Customer, with essential features like room booking, management, and billing.
