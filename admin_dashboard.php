@@ -1,5 +1,4 @@
-Here is the PHP code for a full-width admin dashboard page that displays all customer booking details in a comprehensive table.
-```php
+
 <?php
 // admin_dashboard.php - Admin dashboard (Full width, all booking details visible)
 require_once 'config.php';
@@ -622,4 +621,3 @@ foreach($customers as $customer) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-```
