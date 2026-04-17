@@ -2,7 +2,7 @@
 
 A full-featured Hotel Management System designed to manage hotel operations efficiently. This system supports two main roles: Admin and Customer, with essential features like room booking, management, and billing.
 
--- Features
+-- Features --
 ------> Admin Role
 Dashboard overview (rooms, bookings, users)
 Manage rooms (Add / Edit / Delete)
