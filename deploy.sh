@@ -19,6 +19,7 @@ chmod -R 755 .
 if [ -f "docker-compose.yml" ]; then
     echo "🐳 Building Docker container..."
     docker-compose down
+    //Building input container
     docker-compose up -d --build
 fi
 

@@ -439,28 +439,3 @@ if (isLoggedIn()) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-<?php
-/**
- * index.php - Landing page (improved UI following image reference)
- * 
- * Backend logic preserved exactly as original:
- * - Requires config.php for session & DB helpers
- * - Checks if user is logged in using isLoggedIn() function
- * - Redirects authenticated users to respective dashboard (admin or customer)
- * - All design updates follow strict flat design with NO border-radius
- * 
- * IMPROVEMENTS based on reference image (ADD NEW PRODUCT layout):
- * - Removed ALL border-radius from cards, buttons, navbar, hero, footer
- * - Applied consistent color palette: primary #0c3be4, light background #f8f9fc, white cards
- * - Hero section uses brand gradient but maintains sharp edges (no radius)
- * - Cards have subtle box-shadow with transform effect but keep square corners
- * - Bootstrap grid system with improved spacing and responsive behavior
- * - Added additional amenity cards to enhance hotel management system presentation
- * - All interactive elements maintain flat design aesthetic matching login/register pages
- * - Footer and navigation consistent with other pages for unified experience
- * 
- * The page remains fully functional: unauthenticated users see landing content,
- * authenticated users are redirected to their dashboard.
- */
-?>
